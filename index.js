@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const app = express()
 
 // require router 
-// const users = require('./routes/api/users')
+const users = require('./routes/api/users')
 
 // middleware to allow for CORS request 
 app.use(function(req, res, next) {
@@ -30,12 +30,17 @@ mongoose.connect(db)
     .catch(err => console.log(err))
 
 // test routing 
-
+app.get('/', function(req, res) {
+    res.send("Hello World!\nServer is up and running!")
+})
 // passport middleware 
+app.use(passport.initialize())
 
 // passport JWT token set/config
+require('./config/passport')(passport)
 
 // setup routes 
+app.use('/api/users', users)
 
 // start server 
 app.listen(process.env.PORT || 5000, () => console.log(`Server is running on ${process.env.PORT} and things are looking good 🥳`))
