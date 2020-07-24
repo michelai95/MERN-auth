@@ -53,10 +53,39 @@ router.post('/register', (req, res) => {
     })
 })
 
-
-
-// if not - register the user 
 // GET route to log people in and check their credentials against existing user data
+// route that handles login logic
+router.post('/login', (req, res) => {
+    const email = req.body.email
+    const password = req.body.password
+    
+    // check for user credentials against existing user data 
+    User.findOne({ email })
+        .then(user => {
+            if (!user) {
+                return res.status(400).json({ email: 'User not found'})
+            }
+            // see if hashed pass matches inputed pass
+            bcrypt.compare(password, user.password)
+                .then(isMatch => {
+                    if(isMatch) {
+                        // create token payload 
+                        const payload = { id: user.id, name: user.name, avatar: user.avatar}
+                        
+                        // sign the token
+                        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+                            res.json({ success: true, token: 'Bearer' + token })
+                        })
+                    } else {
+                        // if password doesn't match 
+                        return res.status(400).json({ password: 'Password or email is invalid'})
+                    }
+                })
+            // if we are good to go
+            // else we will not authenticate them 
+
+        })
+})
 // GET if already logged in, set user data to current 
 
 module.exports = router
