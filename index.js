@@ -8,7 +8,7 @@ const bodyParser = require('body-parser')
 const app = express()
 
 // require router 
-const users = require('./routes/api/users')
+// const users = require('./routes/api/users')
 
 // middleware to allow for CORS request 
 app.use(function(req, res, next) {
